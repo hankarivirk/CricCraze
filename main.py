@@ -1,7 +1,6 @@
 import asyncio
 import logging
-import pyromod  # noqa: F401  — patches pyrogram.Client with .listen() used in plugins/solo.py & team_gameplay.py
-from pyrogram import Client
+from pyromod import Client  # patches Client with .listen()/.ask() used in plugins/solo.py & team_gameplay.py
 from config import Config
 
 logging.basicConfig(
