@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 from enum import Enum
@@ -46,7 +47,7 @@ class SoloMatch:
     bowler_number:  Optional[int]   = None
     join_msg_id:    Optional[int]   = None
     score_msg_id:   Optional[int]   = None
-    timer_task      = None
+    timer_task:     Optional[asyncio.Task] = None
 
 # ── Team Match State ──────────────────────────────────────────────────────────
 
@@ -91,7 +92,7 @@ class TeamMatch:
     bowler_number:   Optional[int]    = None
     target:          Optional[int]    = None
     last_3_wickets:  List[int]        = field(default_factory=list)
-    timer_task       = None
+    timer_task:      Optional[asyncio.Task] = None
     join_a_msg_id:   Optional[int]    = None
     join_b_msg_id:   Optional[int]    = None
 
