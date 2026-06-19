@@ -2,7 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from config import Config
 from database.users import add_user, add_group
-from utils.state import maintenance_mode
+import utils.state as state
 
 START_TEXT = """
 🏏  **CRICKET MANIA** — *where legends are born*
@@ -170,16 +170,12 @@ def back_keyboard():
         InlineKeyboardButton("◀️ Back", callback_data="help_main")
     ]])
 
-@Client.on_message(filters.command("start"))
+@Client.on_message(filters.command("start") & filters.private)
 async def start_cmd(client: Client, message: Message):
-    global maintenance_mode
     user = message.from_user
     await add_user(user.id, user.username or "", user.full_name)
 
-    if message.chat.type != "private":
-        await add_group(message.chat.id, message.chat.title)
-
-    if maintenance_mode and user.id != Config.ADMIN_ID:
+    if state.maintenance_mode and user.id != Config.ADMIN_ID:
         return await message.reply(
             "🔧  **Maintenance Mode**\n\n"
             "Bot abhi maintenance par hai. Thodi der baad aana! 🙏"
@@ -188,24 +184,13 @@ async def start_cmd(client: Client, message: Message):
     me = await client.get_me()
     bot_username = me.username
 
-    if message.chat.type == "private":
-        kb = InlineKeyboardMarkup([[
-            InlineKeyboardButton("🏏 PlayZone", url=Config.PLAYZONE_LINK),
-            InlineKeyboardButton("🆘 Support", url=Config.SUPPORT_LINK),
-        ],[
-            InlineKeyboardButton("➕ Add me to your Group!", url=f"https://t.me/{bot_username}?startgroup=true"),
-        ]])
-        await message.reply(START_TEXT, reply_markup=kb)
-    else:
-        kb = InlineKeyboardMarkup([[
-            InlineKeyboardButton("🏏 PlayZone", url=Config.PLAYZONE_LINK),
-            InlineKeyboardButton("🆘 Support", url=Config.SUPPORT_LINK),
-        ]])
-        await message.reply(
-            "💥  **Cricket Mania is here!**\n\n"
-            "Type `/help` to see all game modes & commands! 🏏",
-            reply_markup=kb
-        )
+    kb = InlineKeyboardMarkup([[
+        InlineKeyboardButton("🏏 PlayZone", url=Config.PLAYZONE_LINK),
+        InlineKeyboardButton("🆘 Support", url=Config.SUPPORT_LINK),
+    ],[
+        InlineKeyboardButton("➕ Add me to your Group!", url=f"https://t.me/{bot_username}?startgroup=true"),
+    ]])
+    await message.reply(START_TEXT, reply_markup=kb)
 
 @Client.on_message(filters.command("help"))
 async def help_cmd(client: Client, message: Message):

@@ -14,12 +14,24 @@ from utils.gifs import (
     send_match_start_gif, send_trophy_gif
 )
 from database.stats import update_batting_stats, update_bowling_stats, update_motm
+from database.users import add_user, add_group
 
 # ── /start callback for choosing Solo ────────────────────────────────────────
 
 @Client.on_message(filters.command("start") & filters.group)
 async def group_start_menu(client: Client, message: Message):
     chat_id = message.chat.id
+    user = message.from_user
+
+    await add_user(user.id, user.username or "", user.full_name)
+    await add_group(chat_id, message.chat.title)
+
+    if state.maintenance_mode and user.id != Config.ADMIN_ID:
+        return await message.reply(
+            "🔧  **Maintenance Mode**\n\n"
+            "Bot abhi maintenance par hai. Thodi der baad aana! 🙏"
+        )
+
     if chat_id in solo_matches or chat_id in state.team_matches:
         return await message.reply("⚠️  Ek match already chal raha hai is group mein!")
 
@@ -33,6 +45,7 @@ async def group_start_menu(client: Client, message: Message):
         "👥  **Team Match** — Two sides, one champion.",
         reply_markup=kb
     )
+
 
 @Client.on_callback_query(filters.regex("^mode_solo_"))
 async def choose_solo_mode(client: Client, cb: CallbackQuery):

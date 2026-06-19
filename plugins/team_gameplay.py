@@ -112,17 +112,8 @@ async def change_host_cmd(client: Client, message: Message):
         f"Group admins, please confirm with `/end_match` + restart if approved."
     )
 
-@Client.on_message(filters.command("end_match") & filters.group)
-async def end_team_match_cmd(client: Client, message: Message):
-    match = team_matches.get(message.chat.id)
-    if not match:
-        return  # handled by admin.py for "no match" case
-    member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    is_group_admin = member.status in ("administrator", "creator")
-    if message.from_user.id != match.host_id and not is_group_admin:
-        return await message.reply("🔒  Only the Host or group admin can end the match!")
-    del team_matches[message.chat.id]
-    await message.reply("🛑  **Team match ended!**")
+# Note: /end_match is handled centrally in admin.py (end_match_admin), which
+# covers solo, team, and tournament matches and allows bot-owner override.
 
 # ── Over / Ball Flow ──────────────────────────────────────────────────────────
 
