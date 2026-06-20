@@ -134,21 +134,6 @@ ADMIN_HELP = """
 `/db_stats` — Database info
 """
 
-def start_keyboard(is_group=False):
-    if is_group:
-        return InlineKeyboardMarkup([[
-            InlineKeyboardButton("🏏 PlayZone", url=Config.PLAYZONE_LINK),
-            InlineKeyboardButton("🆘 Support", url=Config.SUPPORT_LINK),
-        ],[
-            InlineKeyboardButton("➕ Add me to your Group!", url=f"https://t.me/{'{bot_username}'}?startgroup=true"),
-        ]])
-    return InlineKeyboardMarkup([[
-        InlineKeyboardButton("🏏 PlayZone", url=Config.PLAYZONE_LINK),
-        InlineKeyboardButton("🆘 Support", url=Config.SUPPORT_LINK),
-    ],[
-        InlineKeyboardButton("➕ Add me to your Group!", url="https://t.me/{bot_username}?startgroup=true"),
-    ]])
-
 def help_keyboard():
     return InlineKeyboardMarkup([
         [
@@ -170,10 +155,18 @@ def back_keyboard():
         InlineKeyboardButton("◀️ Back", callback_data="help_main")
     ]])
 
+@Client.on_message(filters.command("ping"))
+async def ping_cmd(client: Client, message: Message):
+    await message.reply("🏏  **Bot is LIVE!** Pong! ✅")
+
 @Client.on_message(filters.command("start") & filters.private)
 async def start_cmd(client: Client, message: Message):
     user = message.from_user
-    await add_user(user.id, user.username or "", user.full_name)
+
+    try:
+        await add_user(user.id, user.username or "", user.full_name)
+    except Exception:
+        pass
 
     if state.maintenance_mode and user.id != Config.ADMIN_ID:
         return await message.reply(

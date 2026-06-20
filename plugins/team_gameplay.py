@@ -7,6 +7,7 @@ from utils.state import team_matches, GamePhase
 from utils.ui import team_scorecard, team_result_card, bat_prompt, bowl_prompt, dot_ball_msg, century_msg, innings_break_msg
 from utils.gifs import send_run_gif, send_wicket_gif, send_bowling_prompt_gif, send_trophy_gif
 from database.stats import update_batting_stats, update_bowling_stats, update_motm
+from utils.filters import cricket_number
 
 BALLS_PER_OVER = 6
 
@@ -140,7 +141,7 @@ async def wait_for_team_bowl(client: Client, chat_id: int):
     try:
         bowl_msg: Message = await client.listen(
             chat_id=bowler_id,
-            filters=filters.text & filters.private,
+            filters=cricket_number & filters.private,
             timeout=Config.BOWL_TIMEOUT
         )
         try:
@@ -182,7 +183,7 @@ async def wait_for_team_bat(client: Client, chat_id: int):
     try:
         bat_msg: Message = await client.listen(
             chat_id=chat_id,
-            filters=filters.text & filters.user(striker_id),
+            filters=cricket_number & filters.user(striker_id),
             timeout=Config.BAT_TIMEOUT
         )
         try:

@@ -16,6 +16,7 @@ from utils.gifs import (
 )
 from database.stats import update_batting_stats, update_bowling_stats, update_motm
 from database.users import add_user, add_group
+from utils.filters import cricket_number
 
 # ── /start callback for choosing Solo ────────────────────────────────────────
 
@@ -24,8 +25,11 @@ async def group_start_menu(client: Client, message: Message):
     chat_id = message.chat.id
     user = message.from_user
 
-    await add_user(user.id, user.username or "", user.full_name)
-    await add_group(chat_id, message.chat.title)
+    try:
+        await add_user(user.id, user.username or "", user.full_name)
+        await add_group(chat_id, message.chat.title)
+    except Exception:
+        pass
 
     if state.maintenance_mode and user.id != Config.ADMIN_ID:
         return await message.reply(
@@ -283,7 +287,7 @@ async def wait_for_bowl(client: Client, chat_id: int, bowler_id: int, batter_id:
     try:
         bowl_msg: Message = await client.listen(
             chat_id=bowler_id,
-            filters=filters.text & filters.private,
+            filters=cricket_number & filters.private,
             timeout=Config.BOWL_TIMEOUT
         )
         try:
@@ -328,7 +332,7 @@ async def wait_for_bat(client: Client, chat_id: int, batter_id: int, bowler_id: 
     try:
         bat_msg: Message = await client.listen(
             chat_id=chat_id,
-            filters=filters.text & filters.user(batter_id),
+            filters=cricket_number & filters.user(batter_id),
             timeout=Config.BAT_TIMEOUT
         )
         try:
