@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
@@ -8,6 +9,8 @@ from utils.ui import team_scorecard, team_result_card, bat_prompt, bowl_prompt, 
 from utils.gifs import send_run_gif, send_wicket_gif, send_bowling_prompt_gif, send_trophy_gif
 from database.stats import update_batting_stats, update_bowling_stats, update_motm
 from utils.filters import cricket_number
+
+logger = logging.getLogger(__name__)
 
 BALLS_PER_OVER = 6
 
@@ -378,13 +381,13 @@ async def finish_team_match(client: Client, chat_id: int):
                 )
                 if p.balls_bowled > 0:
                     await update_bowling_stats(p.user_id, p.full_name, p.wickets, p.runs_given, p.balls_bowled, p.wickets >= 3)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error("DB stats update failed for user %s: %s", p.user_id, e)
 
     if motm:
         try:
             await update_motm(motm.user_id, motm.full_name)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error("update_motm failed: %s", e)
 
     team_matches.pop(chat_id, None)

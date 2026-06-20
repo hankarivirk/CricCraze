@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import random
 from pyrogram import Client, filters
 from pyrogram.enums import ChatMemberStatus
@@ -18,6 +19,8 @@ from database.stats import update_batting_stats, update_bowling_stats, update_mo
 from database.users import add_user, add_group
 from utils.filters import cricket_number
 
+logger = logging.getLogger(__name__)
+
 # ── /start callback for choosing Solo ────────────────────────────────────────
 
 @Client.on_message(filters.command("start") & filters.group)
@@ -25,11 +28,12 @@ async def group_start_menu(client: Client, message: Message):
     chat_id = message.chat.id
     user = message.from_user
 
+    logger.info("START (group) from user=%s chat=%s", user.id, chat_id)
     try:
         await add_user(user.id, user.username or "", user.full_name)
         await add_group(chat_id, message.chat.title)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error("DB error in group_start_menu: %s", e)
 
     if state.maintenance_mode and user.id != Config.ADMIN_ID:
         return await message.reply(
@@ -142,8 +146,8 @@ async def _join_solo(client, chat_id, user, ctx):
             chat_id, match.join_msg_id, text,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🙋 Join Match", callback_data=f"joinsolo_{chat_id}")]])
         )
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("Could not edit join message: %s", e)
 
     if is_cb:
         await ctx.answer("✅ Joined!")
@@ -433,12 +437,12 @@ async def finish_solo_match(client: Client, chat_id: int):
             if p.balls_bowled > 0:
                 hat_trick = p.wickets >= 3
                 await update_bowling_stats(p.user_id, p.full_name, p.wickets, p.runs_given, p.balls_bowled, hat_trick)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error("DB stats update failed for user %s: %s", p.user_id, e)
 
     try:
         await update_motm(motm.user_id, motm.full_name)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error("update_motm failed: %s", e)
 
     solo_matches.pop(chat_id, None)

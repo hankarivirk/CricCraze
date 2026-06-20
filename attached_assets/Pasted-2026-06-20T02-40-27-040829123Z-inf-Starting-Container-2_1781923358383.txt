@@ -1,0 +1,90 @@
+2026-06-20T02:40:27.040829123Z [inf]  Starting Container
+2026-06-20T02:40:27.776546999Z [inf]  Pyromod is working! If you like pyromod, please star it at https://github.com/usernein/pyromod
+2026-06-20T02:40:27.776552068Z [err]  2026-06-20 02:40:27 | INFO | pyrogram.session.auth | Start creating a new auth key on DC2
+2026-06-20T02:40:27.776556223Z [err]  2026-06-20 02:40:27 | INFO | pyrogram.connection.connection | Connecting...
+2026-06-20T02:40:27.776559641Z [err]  2026-06-20 02:40:27 | INFO | pyrogram.connection.connection | Connected! Production DC2 - IPv4
+2026-06-20T02:40:28.929507012Z [err]  2026-06-20 02:40:28 | INFO | pyrogram.session.auth | Done auth key exchange: DhGenOk
+2026-06-20T02:40:28.929514205Z [err]  2026-06-20 02:40:28 | INFO | pyrogram.connection.connection | Disconnected
+2026-06-20T02:40:28.944566092Z [err]  2026-06-20 02:40:28 | INFO | pyrogram.connection.connection | Connecting...
+2026-06-20T02:40:29.084629783Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.connection.connection | Connected! Production DC2 - IPv4
+2026-06-20T02:40:29.084632860Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.session.session | NetworkTask started
+2026-06-20T02:40:29.823905791Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.session.session | Session initialized: Layer 220
+2026-06-20T02:40:29.823908785Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.session.session | Device: CPython 3.10.15 - Pyrogram 2.3.69
+2026-06-20T02:40:29.823911519Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.session.session | System: Linux 6.18.15+deb13-cloud-amd64 (en)
+2026-06-20T02:40:29.823914791Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.session.session | Session started
+2026-06-20T02:40:29.823917550Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.session.session | PingTask started
+2026-06-20T02:40:29.823920285Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.session.session | PingTask stopped
+2026-06-20T02:40:29.823923066Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.connection.connection | Disconnected
+2026-06-20T02:40:29.823926414Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.session.session | NetworkTask stopped
+2026-06-20T02:40:29.823930045Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.session.session | Session stopped
+2026-06-20T02:40:29.823933183Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.session.auth | Start creating a new auth key on DC4
+2026-06-20T02:40:29.823936322Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.connection.connection | Connecting...
+2026-06-20T02:40:29.823939783Z [err]  2026-06-20 02:40:29 | INFO | pyrogram.connection.connection | Connected! Production DC4 - IPv4
+2026-06-20T02:40:31.793687197Z [err]  2026-06-20 02:40:31 | INFO | pyrogram.connection.connection | Disconnected
+2026-06-20T02:40:31.793699760Z [err]  2026-06-20 02:40:31 | INFO | pyrogram.connection.connection | Connecting...
+2026-06-20T02:40:31.793715637Z [err]  2026-06-20 02:40:31 | INFO | pyrogram.session.auth | Done auth key exchange: DhGenOk
+2026-06-20T02:40:31.926842986Z [err]  2026-06-20 02:40:31 | INFO | pyrogram.connection.connection | Connected! Production DC4 - IPv4
+2026-06-20T02:40:31.926850778Z [err]  2026-06-20 02:40:31 | INFO | pyrogram.session.session | NetworkTask started
+2026-06-20T02:40:32.360466007Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.session.session | Session initialized: Layer 220
+2026-06-20T02:40:32.360471285Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.session.session | Device: CPython 3.10.15 - Pyrogram 2.3.69
+2026-06-20T02:40:32.360475320Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.session.session | System: Linux 6.18.15+deb13-cloud-amd64 (en)
+2026-06-20T02:40:32.360478492Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.session.session | Session started
+2026-06-20T02:40:32.360482110Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.session.session | PingTask started
+2026-06-20T02:40:32.928974960Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("bowling_cmd") in group 0 from "plugins.team_gameplay"
+2026-06-20T02:40:32.928978918Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("batting_cmd") in group 0 from "plugins.team_gameplay"
+2026-06-20T02:40:32.928981739Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("score_cmd") in group 0 from "plugins.team_gameplay"
+2026-06-20T02:40:32.928984495Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("change_cap_cmd") in group 0 from "plugins.team_gameplay"
+2026-06-20T02:40:32.928987998Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("change_host_cmd") in group 0 from "plugins.team_gameplay"
+2026-06-20T02:40:32.928992568Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("broadcast_cmd") in group 0 from "plugins.admin"
+2026-06-20T02:40:32.928995438Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("users_cmd") in group 0 from "plugins.admin"
+2026-06-20T02:40:32.928998103Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("maintenance_cmd") in group 0 from "plugins.admin"
+2026-06-20T02:40:32.929000753Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("reset_stats_cmd") in group 0 from "plugins.admin"
+2026-06-20T02:40:32.929003187Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("db_stats_cmd") in group 0 from "plugins.admin"
+2026-06-20T02:40:32.929005805Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("end_match_admin") in group 0 from "plugins.admin"
+2026-06-20T02:40:32.930283237Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("tournament_start_cmd") in group 0 from "plugins.tournament"
+2026-06-20T02:40:32.930288790Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("t_join_a") in group 0 from "plugins.tournament"
+2026-06-20T02:40:32.930292186Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("t_join_b") in group 0 from "plugins.tournament"
+2026-06-20T02:40:32.930295484Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("t_join_c") in group 0 from "plugins.tournament"
+2026-06-20T02:40:32.930299182Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("t_score_cmd") in group 0 from "plugins.tournament"
+2026-06-20T02:40:32.930302114Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("t_start_cmd") in group 0 from "plugins.tournament"
+2026-06-20T02:40:32.930304964Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("t_result_cmd") in group 0 from "plugins.tournament"
+2026-06-20T02:40:32.930307958Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("t_end_cmd") in group 0 from "plugins.tournament"
+2026-06-20T02:40:32.936823503Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("group_start_menu") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936827886Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("choose_solo_mode") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936831209Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("solo_set_overs") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936834452Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("join_solo_callback") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936837649Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("join_solo_cmd") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936840701Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("leave_solo_cmd") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936844155Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("solo_list_cmd") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936847095Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("force_start_solo") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936849667Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("extend_solo_cmd") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936852518Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("resume_solo_cmd") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936856449Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("end_solo_cmd") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.936859138Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("solo_score_cmd") in group 0 from "plugins.solo"
+2026-06-20T02:40:32.938408631Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("ping_cmd") in group 0 from "plugins.start"
+2026-06-20T02:40:32.938413431Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("start_cmd") in group 0 from "plugins.start"
+2026-06-20T02:40:32.938421024Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("help_cmd") in group 0 from "plugins.start"
+2026-06-20T02:40:32.938423765Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("help_callback") in group 0 from "plugins.start"
+2026-06-20T02:40:32.938426758Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("choose_team_mode") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.938429683Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("host_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.938432539Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("create_teams_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.938435443Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("join_team_a") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.938438435Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("join_team_b") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.938441236Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("join_a_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.938443701Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("join_b_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.938446520Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("recreate_teams_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.939551942Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("add_a_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.939555661Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("add_b_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.939559141Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("remove_player_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.939561906Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("members_list_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.939564704Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("choose_caps_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.939567644Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("set_cap_a") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.939570277Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("set_cap_b") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.939573108Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("toss_choice") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.939575947Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("set_overs_cmd") in group 0 from "plugins.team_setup"
+2026-06-20T02:40:32.939578707Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("stats_cmd") in group 0 from "plugins.stats"
+2026-06-20T02:40:32.939581868Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] MessageHandler("leaderboard_cmd") in group 0 from "plugins.stats"
+2026-06-20T02:40:32.939584597Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] [LOAD] CallbackQueryHandler("leaderboard_callback") in group 0 from "plugins.stats"
+2026-06-20T02:40:32.940754123Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.client | [CricketManiaBot] Successfully loaded 55 plugins from "plugins"
+2026-06-20T02:40:32.940757447Z [err]  2026-06-20 02:40:32 | INFO | pyrogram.dispatcher | Started 32 HandlerTasks
+2026-06-20T02:40:33.109438774Z [err]  2026-06-20 02:40:33 | INFO | __main__ | ✅ @Cric_CrazeBot — CricCraze Bot 🎩 is LIVE!
