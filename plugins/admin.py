@@ -1,5 +1,6 @@
 import asyncio
 from pyrogram import Client, filters
+from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import Message
 from config import Config
 from database.users import get_all_users, get_user_count, get_all_groups, get_group_count
@@ -87,9 +88,8 @@ async def db_stats_cmd(client: Client, message: Message):
 
 @Client.on_message(filters.command("end_match") & filters.group)
 async def end_match_admin(client: Client, message: Message):
-    """Allow group admins or bot owner to force-end any running match."""
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    is_group_admin = member.status in ("administrator", "creator")
+    is_group_admin = member.status in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER)
 
     if not (is_group_admin or message.from_user.id == Config.ADMIN_ID):
         return await message.reply("🔒  Only group admins or bot owner can end a match!")

@@ -1,6 +1,7 @@
 import asyncio
 import random
 from pyrogram import Client, filters
+from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from config import Config
 from utils.state import solo_matches, SoloMatch, PlayerScore, GamePhase
@@ -96,7 +97,7 @@ async def auto_start_timer(client: Client, chat_id: int):
                 chat_id,
                 f"⚠️  **Match Cancelled!**\n\nNot enough players joined (need min {Config.MIN_PLAYERS_SOLO})."
             )
-            del solo_matches[chat_id]
+            solo_matches.pop(chat_id, None)
 
 @Client.on_callback_query(filters.regex("^joinsolo_"))
 async def join_solo_callback(client: Client, cb: CallbackQuery):
@@ -169,7 +170,7 @@ async def solo_list_cmd(client: Client, message: Message):
 @Client.on_message(filters.command("start_solo") & filters.group)
 async def force_start_solo(client: Client, message: Message):
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status not in ("administrator", "creator"):
+    if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
         return await message.reply("🔒  Only group admins can force-start!")
     match = solo_matches.get(message.chat.id)
     if not match or match.phase != GamePhase.JOINING:
@@ -181,7 +182,7 @@ async def force_start_solo(client: Client, message: Message):
 @Client.on_message(filters.command("extend_solo") & filters.group)
 async def extend_solo_cmd(client: Client, message: Message):
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status not in ("administrator", "creator"):
+    if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
         return await message.reply("🔒  Only group admins can extend!")
     match = solo_matches.get(message.chat.id)
     if not match or match.phase != GamePhase.JOINING:
@@ -197,12 +198,12 @@ async def extend_timer(client, chat_id):
             await begin_solo_match(client, chat_id)
         else:
             await client.send_message(chat_id, "⚠️  **Match Cancelled!** Not enough players.")
-            del solo_matches[chat_id]
+            solo_matches.pop(chat_id, None)
 
 @Client.on_message(filters.command("resume_solo") & filters.group)
 async def resume_solo_cmd(client: Client, message: Message):
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status not in ("administrator", "creator"):
+    if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
         return await message.reply("🔒  Only group admins can resume!")
     match = solo_matches.get(message.chat.id)
     if not match:
@@ -213,7 +214,7 @@ async def resume_solo_cmd(client: Client, message: Message):
 @Client.on_message(filters.command("end_solo") & filters.group)
 async def end_solo_cmd(client: Client, message: Message):
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status not in ("administrator", "creator"):
+    if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
         return await message.reply("🔒  Only group admins can end the match!")
     chat_id = message.chat.id
     if chat_id in solo_matches:
@@ -297,12 +298,13 @@ async def wait_for_bowl(client: Client, chat_id: int, bowler_id: int, batter_id:
         await bowl_msg.reply("✅  Got it! Ball is bowled... 🎯")
 
     except asyncio.TimeoutError:
-        bowler = match.players[bowler_id]
-        bowler.consecutive_penalties += 1
-        bowler.runs_given -= 6
+        bowler = match.players.get(bowler_id)
+        if bowler:
+            bowler.consecutive_penalties += 1
+            bowler.runs_given -= 6
         await client.send_message(
             chat_id,
-            f"⏱️  **Time's up!** {bowler.full_name} didn't bowl in time — dot ball + penalty!"
+            f"⏱️  **Time's up!** Bowler didn't bowl in time — dot ball + penalty!"
         )
         match.bowler_number = None
 
@@ -365,7 +367,7 @@ async def resolve_ball(client: Client, chat_id: int, batter_id: int, bowler_id: 
         bowler.wickets += 1
         await send_wicket_gif(client, chat_id, batter.full_name)
     else:
-        runs = bat_number
+        runs = bat_number if bat_number is not None else 0
         batter.runs += runs
         batter.balls += 1
         batter.ball_log.append(runs)
@@ -404,7 +406,7 @@ async def finish_solo_match(client: Client, chat_id: int):
 
     players_data = [vars(p) for p in match.players.values()]
     if not players_data:
-        del solo_matches[chat_id]
+        solo_matches.pop(chat_id, None)
         return
 
     best_batter = max(match.players.values(), key=lambda p: p.runs)
@@ -419,14 +421,20 @@ async def finish_solo_match(client: Client, chat_id: int):
     await send_trophy_gif(client, chat_id, f"⭐️  **Player of the Match:** {motm.full_name}")
 
     for p in match.players.values():
-        await update_batting_stats(
-            p.user_id, p.full_name, p.runs, p.balls, p.fours, p.sixes,
-            p.is_out, won=(p.user_id == best_batter.user_id)
-        )
-        if p.balls_bowled > 0:
-            hat_trick = p.wickets >= 3
-            await update_bowling_stats(p.user_id, p.full_name, p.wickets, p.runs_given, p.balls_bowled, hat_trick)
+        try:
+            await update_batting_stats(
+                p.user_id, p.full_name, p.runs, p.balls, p.fours, p.sixes,
+                p.is_out, won=(p.user_id == best_batter.user_id)
+            )
+            if p.balls_bowled > 0:
+                hat_trick = p.wickets >= 3
+                await update_bowling_stats(p.user_id, p.full_name, p.wickets, p.runs_given, p.balls_bowled, hat_trick)
+        except Exception:
+            pass
 
-    await update_motm(motm.user_id, motm.full_name)
+    try:
+        await update_motm(motm.user_id, motm.full_name)
+    except Exception:
+        pass
 
-    del solo_matches[chat_id]
+    solo_matches.pop(chat_id, None)

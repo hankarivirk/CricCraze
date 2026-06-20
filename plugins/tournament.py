@@ -1,5 +1,6 @@
 import itertools
 from pyrogram import Client, filters
+from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import Message
 from config import Config
 from utils.state import tournaments, Tournament, TournamentTeam, GamePhase
@@ -137,7 +138,7 @@ async def t_end_cmd(client: Client, message: Message):
     if not match:
         return await message.reply("⚠️  No active tournament!")
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    is_grp_admin = member.status in ("administrator", "creator")
+    is_grp_admin = member.status in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER)
     if message.from_user.id != match.host_id and message.from_user.id != Config.ADMIN_ID and not is_grp_admin:
         return await message.reply("🔒  Only the Host or admin can end the tournament!")
     del tournaments[message.chat.id]
