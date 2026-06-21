@@ -1,6 +1,7 @@
 import asyncio
 import logging
-from pyromod import Client  # patches Client with .listen()/.ask() used in plugins/solo.py & team_gameplay.py
+import pyromod  # noqa: F401  — patches pyrogram.Client with .listen()
+from pyrogram import Client
 from config import Config
 
 logging.basicConfig(
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 plugins = dict(root="plugins")
 
 app = Client(
-    "CricketManiaBot",
+    "CosmicCricket",
     api_id=Config.API_ID,
     api_hash=Config.API_HASH,
     bot_token=Config.BOT_TOKEN,
@@ -23,7 +24,7 @@ app = Client(
 async def main():
     async with app:
         me = await app.get_me()
-        logger.info(f"✅ @{me.username} — {me.first_name} is LIVE!")
+        logger.info(f"🏏 Cosmic Cricket @{me.username} — {me.first_name} is LIVE!")
         await asyncio.Event().wait()
 
 if __name__ == "__main__":
