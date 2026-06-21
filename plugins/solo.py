@@ -1,8 +1,6 @@
 import asyncio
-import logging
 import random
 from pyrogram import Client, filters
-from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from config import Config
 from utils.state import solo_matches, SoloMatch, PlayerScore, GamePhase
@@ -17,23 +15,16 @@ from utils.gifs import (
 )
 from database.stats import update_batting_stats, update_bowling_stats, update_motm
 from database.users import add_user, add_group
-from utils.filters import cricket_number
 
-logger = logging.getLogger(__name__)
-
-# ── /start callback for choosing Solo ────────────────────────────────────────
+# ── /start in group → Mode Select ────────────────────────────────────────────
 
 @Client.on_message(filters.command("start") & filters.group)
 async def group_start_menu(client: Client, message: Message):
     chat_id = message.chat.id
     user = message.from_user
 
-    logger.info("START (group) from user=%s chat=%s", user.id, chat_id)
-    try:
-        await add_user(user.id, user.username or "", user.full_name)
-        await add_group(chat_id, message.chat.title)
-    except Exception as e:
-        logger.error("DB error in group_start_menu: %s", e)
+    await add_user(user.id, user.username or "", user.full_name)
+    await add_group(chat_id, message.chat.title)
 
     if state.maintenance_mode and user.id != Config.ADMIN_ID:
         return await message.reply(
@@ -49,7 +40,7 @@ async def group_start_menu(client: Client, message: Message):
         InlineKeyboardButton("👥 Team Match", callback_data=f"mode_team_{message.from_user.id}"),
     ]])
     await message.reply(
-        "🏏  **Choose Your Battle!**\n\n"
+        "🏏  **Cosmic Cricket — Choose Your Battle!**\n\n"
         "🧍  **Solo Match** — Every man for himself.\n"
         "👥  **Team Match** — Two sides, one champion.",
         reply_markup=kb
@@ -71,8 +62,8 @@ async def choose_solo_mode(client: Client, cb: CallbackQuery):
 
 @Client.on_callback_query(filters.regex("^soloovers_"))
 async def solo_set_overs(client: Client, cb: CallbackQuery):
-    _, overs, host_id = cb.data.split("_")
-    overs, host_id = int(overs), int(host_id)
+    parts = cb.data.split("_")
+    overs, host_id = int(parts[1]), int(parts[2])
     if cb.from_user.id != host_id:
         return await cb.answer("🔒 Sirf match starter choose kar sakta hai!", show_alert=True)
 
@@ -146,8 +137,8 @@ async def _join_solo(client, chat_id, user, ctx):
             chat_id, match.join_msg_id, text,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🙋 Join Match", callback_data=f"joinsolo_{chat_id}")]])
         )
-    except Exception as e:
-        logger.warning("Could not edit join message: %s", e)
+    except Exception:
+        pass
 
     if is_cb:
         await ctx.answer("✅ Joined!")
@@ -178,7 +169,7 @@ async def solo_list_cmd(client: Client, message: Message):
 @Client.on_message(filters.command("start_solo") & filters.group)
 async def force_start_solo(client: Client, message: Message):
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
+    if member.status.value not in ("administrator", "creator"):
         return await message.reply("🔒  Only group admins can force-start!")
     match = solo_matches.get(message.chat.id)
     if not match or match.phase != GamePhase.JOINING:
@@ -190,7 +181,7 @@ async def force_start_solo(client: Client, message: Message):
 @Client.on_message(filters.command("extend_solo") & filters.group)
 async def extend_solo_cmd(client: Client, message: Message):
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
+    if member.status.value not in ("administrator", "creator"):
         return await message.reply("🔒  Only group admins can extend!")
     match = solo_matches.get(message.chat.id)
     if not match or match.phase != GamePhase.JOINING:
@@ -211,7 +202,7 @@ async def extend_timer(client, chat_id):
 @Client.on_message(filters.command("resume_solo") & filters.group)
 async def resume_solo_cmd(client: Client, message: Message):
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
+    if member.status.value not in ("administrator", "creator"):
         return await message.reply("🔒  Only group admins can resume!")
     match = solo_matches.get(message.chat.id)
     if not match:
@@ -222,11 +213,11 @@ async def resume_solo_cmd(client: Client, message: Message):
 @Client.on_message(filters.command("end_solo") & filters.group)
 async def end_solo_cmd(client: Client, message: Message):
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
+    if member.status.value not in ("administrator", "creator"):
         return await message.reply("🔒  Only group admins can end the match!")
     chat_id = message.chat.id
     if chat_id in solo_matches:
-        del solo_matches[chat_id]
+        solo_matches.pop(chat_id, None)
         await message.reply("🛑  **Solo match ended!**")
     else:
         await message.reply("⚠️  No active solo match!")
@@ -242,14 +233,16 @@ async def solo_score_cmd(client: Client, message: Message):
 # ── Core Match Flow ───────────────────────────────────────────────────────────
 
 async def begin_solo_match(client: Client, chat_id: int):
-    match = solo_matches[chat_id]
+    match = solo_matches.get(chat_id)
+    if not match:
+        return
     match.phase = GamePhase.BOWLING
     random.shuffle(match.order)
 
     await send_match_start_gif(client, chat_id)
     await client.send_message(
         chat_id,
-        f"🏏  **MATCH STARTED!**\n\n"
+        f"🏏  **COSMIC CRICKET — MATCH STARTED!**\n\n"
         f"👥  {len(match.players)} players ready to battle!\n"
         f"🎯  {match.overs} ball{'s' if match.overs > 1 else ''} per over\n\n"
         f"Let the game begin! 🔥"
@@ -276,8 +269,8 @@ async def next_ball(client: Client, chat_id: int):
 
     bowler = match.players[bowler_id]
     match.bowl_number += 1
-
     match.phase = GamePhase.BOWLING
+
     await send_bowling_prompt_gif(client, chat_id)
     await client.send_message(chat_id, bowl_prompt(bowler.full_name, match.bowl_number, match.overs))
 
@@ -288,34 +281,38 @@ async def wait_for_bowl(client: Client, chat_id: int, bowler_id: int, batter_id:
     if not match:
         return
 
+    bowl_number = None
     try:
+        # Listen for bowler's number in DM (private chat)
         bowl_msg: Message = await client.listen(
-            chat_id=bowler_id,
-            filters=cricket_number & filters.private,
+            bowler_id,
+            filters=filters.text & filters.private,
             timeout=Config.BOWL_TIMEOUT
         )
+        text = bowl_msg.text.strip() if bowl_msg.text else ""
         try:
-            number = int(bowl_msg.text.strip())
+            number = int(text)
             if not (1 <= number <= 6):
                 raise ValueError
+            bowl_number = number
+            await bowl_msg.reply("✅  Got it! Ball is bowled... 🎯")
         except ValueError:
-            await bowl_msg.reply("⚠️  Send a number between 1-6!")
-            return await wait_for_bowl(client, chat_id, bowler_id, batter_id)
-
-        match.bowler_number = number
-        await bowl_msg.reply("✅  Got it! Ball is bowled... 🎯")
+            await bowl_msg.reply("⚠️  Send a number between 1-6! Treating as dot ball.")
 
     except asyncio.TimeoutError:
-        bowler = match.players.get(bowler_id)
-        if bowler:
+        match = solo_matches.get(chat_id)
+        if match and bowler_id in match.players:
+            bowler = match.players[bowler_id]
             bowler.consecutive_penalties += 1
-            bowler.runs_given -= 6
-        await client.send_message(
-            chat_id,
-            f"⏱️  **Time's up!** Bowler didn't bowl in time — dot ball + penalty!"
-        )
-        match.bowler_number = None
+            await client.send_message(
+                chat_id,
+                f"⏱️  **Time's up!** {bowler.full_name} didn't bowl in time — dot ball!"
+            )
 
+    match = solo_matches.get(chat_id)
+    if not match:
+        return
+    match.bowler_number = bowl_number
     await prompt_batter(client, chat_id, batter_id, bowler_id)
 
 async def prompt_batter(client: Client, chat_id: int, batter_id: int, bowler_id: int):
@@ -333,23 +330,33 @@ async def wait_for_bat(client: Client, chat_id: int, batter_id: int, bowler_id: 
     if not match:
         return
 
+    bat_number = None
+    timed_out = False
+
     try:
+        # Listen for batter's number in the GROUP
         bat_msg: Message = await client.listen(
-            chat_id=chat_id,
-            filters=cricket_number & filters.user(batter_id),
+            chat_id,
+            filters=filters.text & filters.user(batter_id),
             timeout=Config.BAT_TIMEOUT
         )
+        text = bat_msg.text.strip() if bat_msg.text else ""
         try:
-            number = int(bat_msg.text.strip())
+            number = int(text)
             if not (1 <= number <= 6):
                 raise ValueError
+            bat_number = number
         except ValueError:
+            # Invalid input — re-listen
             return await wait_for_bat(client, chat_id, batter_id, bowler_id)
 
-        await resolve_ball(client, chat_id, batter_id, bowler_id, number, timed_out=False)
-
     except asyncio.TimeoutError:
-        await resolve_ball(client, chat_id, batter_id, bowler_id, None, timed_out=True)
+        timed_out = True
+
+    match = solo_matches.get(chat_id)
+    if not match:
+        return
+    await resolve_ball(client, chat_id, batter_id, bowler_id, bat_number, timed_out=timed_out)
 
 async def resolve_ball(client: Client, chat_id: int, batter_id: int, bowler_id: int,
                        bat_number, timed_out: bool):
@@ -367,14 +374,18 @@ async def resolve_ball(client: Client, chat_id: int, batter_id: int, bowler_id: 
         batter.is_out = True
         batter.ball_log.append("W")
         bowler.wickets += 1
-        await client.send_message(chat_id, "⏱️  **Time's up!** Auto OUT!")
+        await client.send_message(chat_id, f"⏱️  **Time's up!** {batter.full_name} Auto OUT!")
         await send_wicket_gif(client, chat_id, batter.full_name)
-    elif bowl_number is not None and bat_number == bowl_number:
+
+    elif bowl_number is not None and bat_number is not None and bat_number == bowl_number:
+        # Match! Wicket
         batter.is_out = True
         batter.ball_log.append("W")
         bowler.wickets += 1
         await send_wicket_gif(client, chat_id, batter.full_name)
+
     else:
+        # Runs scored
         runs = bat_number if bat_number is not None else 0
         batter.runs += runs
         batter.balls += 1
@@ -395,6 +406,7 @@ async def resolve_ball(client: Client, chat_id: int, batter_id: int, bowler_id: 
 
     match.bowler_number = None
 
+    # Check if batter's overs are up (used all balls)
     if not batter.is_out and batter.balls >= match.overs:
         batter.is_out = True
 
@@ -429,20 +441,13 @@ async def finish_solo_match(client: Client, chat_id: int):
     await send_trophy_gif(client, chat_id, f"⭐️  **Player of the Match:** {motm.full_name}")
 
     for p in match.players.values():
-        try:
-            await update_batting_stats(
-                p.user_id, p.full_name, p.runs, p.balls, p.fours, p.sixes,
-                p.is_out, won=(p.user_id == best_batter.user_id)
-            )
-            if p.balls_bowled > 0:
-                hat_trick = p.wickets >= 3
-                await update_bowling_stats(p.user_id, p.full_name, p.wickets, p.runs_given, p.balls_bowled, hat_trick)
-        except Exception as e:
-            logger.error("DB stats update failed for user %s: %s", p.user_id, e)
+        await update_batting_stats(
+            p.user_id, p.full_name, p.runs, p.balls, p.fours, p.sixes,
+            p.is_out, won=(p.user_id == best_batter.user_id)
+        )
+        if p.balls_bowled > 0:
+            hat_trick = p.wickets >= 3
+            await update_bowling_stats(p.user_id, p.full_name, p.wickets, p.runs_given, p.balls_bowled, hat_trick)
 
-    try:
-        await update_motm(motm.user_id, motm.full_name)
-    except Exception as e:
-        logger.error("update_motm failed: %s", e)
-
+    await update_motm(motm.user_id, motm.full_name)
     solo_matches.pop(chat_id, None)

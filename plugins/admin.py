@@ -1,6 +1,5 @@
 import asyncio
 from pyrogram import Client, filters
-from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import Message
 from config import Config
 from database.users import get_all_users, get_user_count, get_all_groups, get_group_count
@@ -26,7 +25,7 @@ async def broadcast_cmd(client: Client, message: Message):
 
     for u in users:
         try:
-            await client.send_message(u["_id"], f"📢  **Announcement**\n\n{text}")
+            await client.send_message(u["_id"], f"📢  **Cosmic Cricket Announcement**\n\n{text}")
             sent += 1
         except Exception:
             failed += 1
@@ -43,7 +42,7 @@ async def users_cmd(client: Client, message: Message):
     user_count  = await get_user_count()
     group_count = await get_group_count()
     await message.reply(
-        f"📊  **Bot Statistics**\n"
+        f"📊  **Cosmic Cricket — Bot Statistics**\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
         f"👤  Total Users:  **{user_count}**\n"
         f"👥  Total Groups: **{group_count}**\n"
@@ -78,7 +77,7 @@ async def db_stats_cmd(client: Client, message: Message):
     match_count = await matches_col.count_documents({})
 
     await message.reply(
-        f"🗄️  **Database Info**\n"
+        f"🗄️  **Cosmic Cricket — Database Info**\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
         f"👤  Users:   **{user_count}**\n"
         f"👥  Groups:  **{group_count}**\n"
@@ -88,8 +87,9 @@ async def db_stats_cmd(client: Client, message: Message):
 
 @Client.on_message(filters.command("end_match") & filters.group)
 async def end_match_admin(client: Client, message: Message):
+    """Allow group admins or bot owner to force-end any running match."""
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    is_group_admin = member.status in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER)
+    is_group_admin = member.status.value in ("administrator", "creator")
 
     if not (is_group_admin or message.from_user.id == Config.ADMIN_ID):
         return await message.reply("🔒  Only group admins or bot owner can end a match!")
@@ -98,13 +98,13 @@ async def end_match_admin(client: Client, message: Message):
     ended = False
 
     if chat_id in state.solo_matches:
-        del state.solo_matches[chat_id]
+        state.solo_matches.pop(chat_id, None)
         ended = True
     if chat_id in state.team_matches:
-        del state.team_matches[chat_id]
+        state.team_matches.pop(chat_id, None)
         ended = True
     if chat_id in state.tournaments:
-        del state.tournaments[chat_id]
+        state.tournaments.pop(chat_id, None)
         ended = True
 
     if ended:

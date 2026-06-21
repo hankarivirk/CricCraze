@@ -1,14 +1,13 @@
-import logging
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from config import Config
 from database.users import add_user, add_group
 import utils.state as state
 
-logger = logging.getLogger(__name__)
+BOT_NAME = "Cosmic Cricket 🏏"
 
 START_TEXT = """
-🏏  **CRICKET MANIA** — *where legends are born*
+🏏  **COSMIC CRICKET** — *where legends are born*
 
 🎙  *Live the game. Feel the roar.*
 
@@ -32,7 +31,7 @@ No app needed. No drama. Pure *cricket.*
 """
 
 HELP_TEXT = """
-📖  **CRICKET MANIA — HELP**
+📖  **COSMIC CRICKET 🏏 — HELP**
 
 *Choose a game mode to get started* 👇
 """
@@ -158,24 +157,10 @@ def back_keyboard():
         InlineKeyboardButton("◀️ Back", callback_data="help_main")
     ]])
 
-@Client.on_message(filters.command("ping"))
-async def ping_cmd(client: Client, message: Message):
-    logger.info("PING from user=%s chat=%s", message.from_user.id, message.chat.id)
-    try:
-        await message.reply("🏏  **Bot is LIVE!** Pong! ✅")
-        logger.info("PING reply sent OK")
-    except Exception as e:
-        logger.error("PING reply failed: %s", e, exc_info=True)
-
 @Client.on_message(filters.command("start") & filters.private)
 async def start_cmd(client: Client, message: Message):
     user = message.from_user
-    logger.info("START (private) from user=%s", user.id)
-
-    try:
-        await add_user(user.id, user.username or "", user.full_name)
-    except Exception as e:
-        logger.error("add_user failed: %s", e)
+    await add_user(user.id, user.username or "", user.full_name)
 
     if state.maintenance_mode and user.id != Config.ADMIN_ID:
         return await message.reply(
@@ -183,51 +168,36 @@ async def start_cmd(client: Client, message: Message):
             "Bot abhi maintenance par hai. Thodi der baad aana! 🙏"
         )
 
-    try:
-        me = await client.get_me()
-        bot_username = me.username
-    except Exception as e:
-        logger.error("get_me() failed: %s", e)
-        bot_username = "CricketManiaBot"
+    me = await client.get_me()
+    bot_username = me.username
 
-    try:
-        kb = InlineKeyboardMarkup([[
-            InlineKeyboardButton("🏏 PlayZone", url=Config.PLAYZONE_LINK),
-            InlineKeyboardButton("🆘 Support", url=Config.SUPPORT_LINK),
-        ],[
-            InlineKeyboardButton("➕ Add me to your Group!", url=f"https://t.me/{bot_username}?startgroup=true"),
-        ]])
-        await message.reply(START_TEXT, reply_markup=kb)
-        logger.info("START reply sent OK to user=%s", user.id)
-    except Exception as e:
-        logger.error("START reply failed: %s", e, exc_info=True)
+    kb = InlineKeyboardMarkup([[
+        InlineKeyboardButton("🏏 PlayZone", url=Config.PLAYZONE_LINK),
+        InlineKeyboardButton("🆘 Support", url=Config.SUPPORT_LINK),
+    ],[
+        InlineKeyboardButton("➕ Add me to your Group!", url=f"https://t.me/{bot_username}?startgroup=true"),
+    ]])
+    await message.reply(START_TEXT, reply_markup=kb)
 
 @Client.on_message(filters.command("help"))
 async def help_cmd(client: Client, message: Message):
-    logger.info("HELP from user=%s chat=%s", message.from_user.id, message.chat.id)
-    try:
-        await message.reply(HELP_TEXT, reply_markup=help_keyboard())
-    except Exception as e:
-        logger.error("HELP reply failed: %s", e, exc_info=True)
+    await message.reply(HELP_TEXT, reply_markup=help_keyboard())
 
 @Client.on_callback_query(filters.regex("^help_"))
 async def help_callback(client: Client, cb: CallbackQuery):
     data = cb.data
-    try:
-        if data == "help_main":
-            await cb.message.edit_text(HELP_TEXT, reply_markup=help_keyboard())
-        elif data == "help_solo":
-            await cb.message.edit_text(SOLO_HELP, reply_markup=back_keyboard())
-        elif data == "help_team":
-            await cb.message.edit_text(TEAM_HELP, reply_markup=back_keyboard())
-        elif data == "help_tournament":
-            await cb.message.edit_text(TOURNAMENT_HELP, reply_markup=back_keyboard())
-        elif data == "help_stats":
-            await cb.message.edit_text(STATS_HELP, reply_markup=back_keyboard())
-        elif data == "help_admin":
-            if cb.from_user.id != Config.ADMIN_ID:
-                return await cb.answer("🔒 Sirf bot owner dekh sakta hai!", show_alert=True)
-            await cb.message.edit_text(ADMIN_HELP, reply_markup=back_keyboard())
-        await cb.answer()
-    except Exception as e:
-        logger.error("help_callback error: %s", e, exc_info=True)
+    if data == "help_main":
+        await cb.message.edit_text(HELP_TEXT, reply_markup=help_keyboard())
+    elif data == "help_solo":
+        await cb.message.edit_text(SOLO_HELP, reply_markup=back_keyboard())
+    elif data == "help_team":
+        await cb.message.edit_text(TEAM_HELP, reply_markup=back_keyboard())
+    elif data == "help_tournament":
+        await cb.message.edit_text(TOURNAMENT_HELP, reply_markup=back_keyboard())
+    elif data == "help_stats":
+        await cb.message.edit_text(STATS_HELP, reply_markup=back_keyboard())
+    elif data == "help_admin":
+        if cb.from_user.id != Config.ADMIN_ID:
+            return await cb.answer("🔒 Sirf bot owner dekh sakta hai!", show_alert=True)
+        await cb.message.edit_text(ADMIN_HELP, reply_markup=back_keyboard())
+    await cb.answer()
